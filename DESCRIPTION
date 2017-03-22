@@ -1,0 +1,19 @@
+Package: NOMAD
+Type: Package
+Title: Normalization of Mass Spectrometry Data
+Version: 0.99.0
+Date: 2015-01-15
+Author: Carl Murie
+Maintainer: Carl Murie <cmurie@fredhutch.org>
+Description: The NOMAD R package that implements an ANOVA normalization method designed for iTRAQ mass spectrometry data in a computationally efficient manner.
+NeedsCompilation: no
+Depends: 
+    R (>= 3.3.3), 
+    dplR, 
+    stringr, 
+    graphics, 
+    stats
+LazyLoad: true
+License: GPL (>=2)
+biocViews: Normalization, Proteomics, MassSpectrometry 
+RoxygenNote: 6.0.1
