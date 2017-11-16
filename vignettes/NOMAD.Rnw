@@ -43,11 +43,10 @@ There are two required parameters.
 \begin{enumerate}
 \item \textit{y}: Vector of peptide abundances.
 
-\item \textit{x}: A data.frame defining the experimental design. Each row of \textit{x} will define the experimental information for the same row of \textit{y}. The data.frame \textit{x} must contain the following columns labelled Peptide, Protein, Run, iTRAQ, and, optionally, iTRAQCorrectionIndex.
+\item \textit{x}: A data.frame defining the experimental design. Each row of \textit{x} will define the experimental information for the same row of \textit{y}. The data.frame \textit{x} must contain the following columns labelled Protein, Peptide,  Run, iTRAQ, and, optionally, iTRAQCorrectionIndex.
 
 \begin{itemize}
 \item Peptide: Defines the peptide sequence. This can be a unique identifier or the  actual peptide sequence.
-\item Protein: Defines which protein the peptide has been assigned to. The protein annotation can be used.
 \item Run: Defines the MS run that generated the peptide abundance.
 \item iTRAQ: Defines which iTRAQ channel this peptide abundance was assigned to.
 \item iTRAQCorrectionIndex: This column is necessary if iTRAQ isotope correction is desired. Each peptide abundance is generated from a particular spectrum for each run and each unique spectrum should contain an abundance score for each iTRAQ used in the assay. For example, if an assay uses 8 iTRAQs for a run then each spectrum should generate 8 abundances. The iTRAQCorrectionIndex should uniquely define each set of iTRAQs generated for a single spectrum. It may be possible to use the spectrum identifier for this purpose. However there have been cases where the same protein and peptide, although different isoforms, are present in different spectrums in the same run. In this case the spectrum cannot be used as it is not a unique identifier for the iTRAQs.
@@ -58,14 +57,14 @@ There are two required parameters.
 Other optional parameters are as follows:
 
 \begin{enumerate}
-\item \textit{factors}: Optional list of experimental factors which will be used to normalize the data. The default value is NULL which will result in the use of the following factors for normalization: Protein, Peptide, Run, iTRAQ, Protein \& Run interaction, Peptide \& Run interaction, and iTRAQ \& Run interaction. The user may add to these factors with those of their own choosing as long as these factors are defined in \textit{x}.
+\item \textit{factors}: Optional list of experimental factors which will be used to normalize the data. The default value is NULL which will result in the use of the following factors for normalization: Peptide, Run, iTRAQ, Peptide \& Run interaction, and iTRAQ \& Run interaction. The user may add to these factors with those of their own choosing as long as these factors are defined in \textit{x}. 
 \item \textit{doRobust}: If TRUE then a robust approach to normalization is used (medians rather than means of levels are used). The default is TRUE.
 \item \textit{doLog}: If TRUE then the data is log2 transformed. The default is TRUE as it is generally advised to log transform the data. The checkLogTransform function can be used to decide whether to log transform the data.
 \item \textit{doiTRAQCorrection}: If TRUE then a correction for iTRAQ isotope signal overlap will be performed. If 4 or 8 iTRAQs were used then an iTRAQCorrectionTable is available by default. If the number of iTRAQs is not 4 or 8 then the user must supply the iTRAQCorrectionTable.
 \item \textit{iTRAQCorrectionTable}: An n by n matrix where n is the number of iTRAQs used. Each row corresponds to the ordered iTRAQs and shows the proportion of each iTRAQ signal that contributes to that iTRAQs abundance score. An example of an iTRAQCorrectionTable is found in Appendix \ref{App:iTRAQCorrectionTable}
 \end{enumerate}
 
-The default and recommended call of \textit{nomadNormalization} uses four main effects (Protein, Peptide, Run, iTRAQ) and three interaction effects(Protein \& Run, Peptide \& Run, iTRAQ \& Run). Notice that this requires either a balanced or randomized experimental design. A robust measure (median) is used when calculating normalization values and a log2 transformation of the data is applied before normalization. iTRAQCorrection is not done by default although if 4 or 8 iTRAQs are used then setting the doiTRAQCorrection parameter to TRUE will apply the correction. Generally the consensus is that iTRAQCorrection should be done, but we have found that such correction will often introduce negative values (resulting in NAs) which questions the validity of this ``background correction''. 
+The default and recommended call of \textit{nomadNormalization} uses three main effects (Peptide, Run, iTRAQ) and two interaction effects(Peptide \& Run, iTRAQ \& Run). Notice that this requires either a balanced or randomized experimental design. A robust measure (median) is used when calculating normalization values and a log2 transformation of the data is applied before normalization. iTRAQCorrection is not done by default although if 4 or 8 iTRAQs are used then setting the doiTRAQCorrection parameter to TRUE will apply the correction. Generally the consensus is that iTRAQCorrection should be done, but we have found that such correction will often introduce negative values (resulting in NAs) which questions the validity of this ``background correction''. 
 \\ 
 \\
 
@@ -130,15 +129,14 @@ The \textit{nomadNormalization} function returns a list with four elements.
 \subsection{nomadNormalization function call with user added factors}
 \label{sec::normCall1}
 
-A user may wish to change or add to the factors used in NOMAD normalization. For example a researcher may believe that the Protein factor is not necessary and wishes to remove the Protein and Protein \& Run interaction factors. Additionally, their lab has a ``Sloppy\_Joe'' factor where they are concerned that a particular technician may affect iTRAQ channels 1 to 4 differently than 5 to 8. An additional column named ``Sloppy\_Joe'' must be added to \textit{x} where rows associated with iTRAQ channels 1-4 and 5-8 are assigned 0 and 1, respectively. A list defining the factors to be used in the normalization must be passed to \textit{nomadNormalization}.
+A user may wish to change or add to the factors used in NOMAD normalization. For example a researcher may believe that the iTRAQ factor is not necessary and wishes to remove the iTRAQ and iTRAQ \& Run interaction factors. Additionally, their lab has a ``Sloppy\_Joe'' factor where they are concerned that a particular technician may affect iTRAQ channels 1 to 4 differently than 5 to 8. An additional column named ``Sloppy\_Joe'' must be added to \textit{x} where rows associated with iTRAQ channels 1-4 and 5-8 are assigned 0 and 1, respectively. A list defining the factors to be used in the normalization must be passed to \textit{nomadNormalization}.
 
  
 \begin{verbatim}
 
 ## define new list of factors
-myFactors <- list("Peptide", "Run", "iTRAQ", "Sloppy_Joe",
-                           c("Run", "Peptide"),
-                           c("Run", "iTRAQ"))
+myFactors <- list("Peptide", "Run", "Sloppy_Joe",
+                           c("Run", "Peptide"))
 
 ## add Sloppy_Joe column to "x"
 len <- dim(x)/2

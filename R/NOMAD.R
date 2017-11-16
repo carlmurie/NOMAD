@@ -199,21 +199,24 @@ nomadNormalization <- function(y, x, factors=NULL, doRobust=TRUE,
     stop(outChar)
   }
   
-  if(is.null(x$Protein)) {
-    stop(paste("x is missing Protein column"))
-  }
-  
-  if(is.null(x$Peptide)) {
-    stop(paste("x is missing Peptide column"))
-  }
-  
-  if(is.null(x$Run)) {
-    stop(paste("x is missing Run column"))
-  }
-  
-  if(is.null(x$iTRAQ)) {
-    stop(paste("x is missing iTRAQ column"))
-  }
+  ## if factors is not inputted check that default columns exist.
+  if(is.null(factors)) {
+      if(is.null(x$Protein)) {
+        stop(paste("x is missing Protein column"))
+      }
+      
+      if(is.null(x$Peptide)) {
+        stop(paste("x is missing Peptide column"))
+      }
+      
+      if(is.null(x$Run)) {
+        stop(paste("x is missing Run column"))
+      }
+      
+      if(is.null(x$iTRAQ)) {
+        stop(paste("x is missing iTRAQ column"))
+      }
+  } ## end if is.null factors
   
   if(doiTRAQCorrection==TRUE) {
     if(is.null(x$iTRAQCorrectionIndex)) {
@@ -223,8 +226,7 @@ nomadNormalization <- function(y, x, factors=NULL, doRobust=TRUE,
   
   ## assemble factors for normalization including interactions
   if(is.null(factors)) {
-    factorList <- list("Protein", "Peptide", "Run", "iTRAQ", 
-                       c("Run", "Protein"),
+    factorList <- list("Peptide", "Run", "iTRAQ", 
                        c("Run", "Peptide"),
                        c("Run", "iTRAQ"))
   } else {
